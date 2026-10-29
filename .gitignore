@@ -1,0 +1,31 @@
+# Local development environments and caches
+.DS_Store
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.env
+.env.*
+!.env.example
+
+# Per-target inputs, captures, and generated outputs
+artifacts/
+captures/
+outputs/
+runs/
+tools/
+*.log
+*.apk
+*.xapk
+*.apks
+*.aab
+*.obb
+*.dex
+*.so
+
+# Signing material
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.key

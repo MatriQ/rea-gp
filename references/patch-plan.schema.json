@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Source-bound equal-length binary patch plan",
+  "type": "object",
+  "required": ["input_sha256", "patches"],
+  "properties": {
+    "input_sha256": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"},
+    "output_sha256": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"},
+    "patches": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["before", "after"],
+        "anyOf": [{"required": ["file_offset"]}, {"required": ["virtual_address"]}],
+        "properties": {
+          "name": {"type": "string"},
+          "file_offset": {"$ref": "#/$defs/address"},
+          "virtual_address": {"$ref": "#/$defs/address"},
+          "before": {"type": "string", "pattern": "^(?:[0-9a-fA-F]{2})+$"},
+          "after": {"type": "string", "pattern": "^(?:[0-9a-fA-F]{2})+$"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "address": {
+      "oneOf": [
+        {"type": "integer", "minimum": 0},
+        {"type": "string", "pattern": "^(?:0x[0-9a-fA-F]+|0|[1-9][0-9]*)$"}
+      ]
+    }
+  }
+}

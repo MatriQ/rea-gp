@@ -1,4 +1,4 @@
 interface:
   display_name: "REA_GP"
-  short_description: "Analyze Android game platform and SDK dependencies"
-  default_prompt: "Use $rea-gp to handle the specified game's Google Play, resource download, Firebase, and advertising dependencies within my chosen scope, preserve unspecified features, and deliver the package with verification results."
+  short_description: "Find Android games and adapt platform dependencies"
+  default_prompt: "Use $rea-gp to locate and download the game package if I provide only a name, then handle its Google Play, resource download, Firebase, and advertising dependencies within my chosen scope, preserving unspecified features and reporting verification results."

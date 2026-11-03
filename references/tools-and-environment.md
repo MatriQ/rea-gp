@@ -22,6 +22,7 @@ Record selected executable paths, versions, host/device ABI, and supported targe
 
 | Stage | Preferred tools | When needed and alternatives |
 | --- | --- | --- |
+| Game-name search and package acquisition | Host web search/browser; bundled `acquire_package.py`; optional curl/httpx | Search and resolve the actual public app/version page, then fetch one selected APK/XAPK with provenance and archive checks. Read [package-acquisition.md](package-acquisition.md); no Android SDK or REA provider is required for download alone. |
 | ZIP/APK/XAPK inventory and hashes | REA artifact tools; Python standard library | Bundled `inventory_package.py` inventories members, ABI, DEX, resource compression, and nested APKs without Android SDK. It does not parse binary Manifests. |
 | Manifest, package name, split declarations | Android SDK `aapt2`; apktool | Use `aapt2 dump badging`/`dump xmltree`; use apktool for full resource editing. Inventory alone does not require decompiling the entire APK. |
 | DEX call chains and resource editing | JADX, apktool, smali/baksmali; D8 when needed | JADX output supports understanding and reference tracing, not recompilation as original Java source. APK rebuilding needs a JDK; D8 produces helper DEX from genuine Java source/bytecode. |

@@ -14,6 +14,7 @@ Cloud or remote agent sessions need the skill and tools in their own runtime. A 
 
 | Capability | Host adaptation | When unavailable |
 | --- | --- | --- |
+| Find/download a game package | Use the host's search/browser or `acquire_package.py` against public source pages. Follow [package-acquisition.md](package-acquisition.md) for identity and variant decisions. | Reuse a local artifact or identify the missing source access without claiming a download succeeded. |
 | Read files and references | Use the host's file tools or shell; resolve links relative to the loaded file and script paths from the skill root. | Work with supplied text/artifacts and identify files still needed. |
 | Execute helpers and analysis tools | Use the host's shell or process tool with an explicit working directory and absolute input/output paths. Select Python and Android tools in that environment. | Provide analysis and reproducible commands, with execution marked pending. |
 | Preserve evidence | Store hashes, exact commands, tool versions, observations, and outputs in the task workspace. Use actual REA Evidence IDs only when supplied by REA. | Distinguish unavailable evidence from inference; do not invent identifiers. |

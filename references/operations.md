@@ -4,6 +4,8 @@ Uppercase command arguments are task-specific placeholders. Resolve absolute too
 
 ## 1. Inventory the package without execution
 
+If only a game name or source URL is available, first follow [package-acquisition.md](package-acquisition.md) to obtain and identify the package. Reuse supplied local files.
+
 Run `inventory_package.py`. For XAPK, inspect the outer archive first, then use `--nested` for internal APKs as needed. An XAPK is not directly an installable APK.
 
 Record package/version, ABI, split relationships, install-time resources, DEX/native libraries/metadata, ZIP compression, and signing identity. Read the actual Manifest with aapt2 or apktool:

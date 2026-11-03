@@ -1,6 +1,6 @@
 ---
 name: rea-gp
-description: "Analyze and modify Google Play dependencies in Android game APK/XAPK files, with optional resource download, Firebase, and advertising SDK changes. Support disabling integrations, offline alternatives, purchase gate adjustments, and package verification for Unity/IL2CPP and protected initialization targets. Exclude ordinary source development and ADB connection alone."
+description: "Find and download Android game APK/XAPK packages from game names or URLs, then analyze and modify their Google Play dependencies, with optional resource download, Firebase, and advertising SDK changes. Support disabling integrations, offline alternatives, purchase gate adjustments, and package verification for Unity/IL2CPP and protected initialization targets. Exclude ordinary source development and ADB connection alone."
 ---
 
 # REA_GP
@@ -14,6 +14,10 @@ Use this workflow with any agent that can load these instructions and access the
 Executing helpers requires Python 3 and filesystem/shell access. Select Android analysis/build tools for the current task; device verification additionally requires ADB access to the selected device. REA and MCP integrations are optional.
 
 Native discovery paths and invocation syntax belong to the host. The shared workflow does not require `$rea-gp`, slash commands, or OpenAI-specific tool APIs. `agents/openai.yaml` is an optional Codex adapter; other hosts can ignore it. For installation, manual loading, and capability checks, read [agent-integration.md](references/agent-integration.md).
+
+## Resolve the package input
+
+When given a local APK/XAPK, reuse it. When given only a game name or source page, locate the intended title/publisher/package and obtain the selected version before inventory. Continue automatically when identity is established; clarify genuinely ambiguous matches instead of selecting the first result. Read [package-acquisition.md](references/package-acquisition.md) for APKPure/public-source search, version selection, the acquisition helper, browser fallbacks, and Manifest/signature checks. Keep downloads and provenance in the task workspace. Downloading a package does not authorize installing it or changing additional features.
 
 ## Define scope by module
 
@@ -33,7 +37,7 @@ Read [resources-and-downloads.md](references/resources-and-downloads.md) for dow
 
 ## Choose the route and tools
 
-Start with [tools-and-environment.md](references/tools-and-environment.md) and select tools for the current stage. Reusable helpers cover environment discovery, package inventory, and equal-length patches:
+Start with [tools-and-environment.md](references/tools-and-environment.md) and select tools for the current stage. Reusable helpers cover package acquisition, environment discovery, package inventory, and verified patches:
 
 ```bash
 python3 scripts/doctor_tools.py --probe

@@ -2,7 +2,7 @@
 
 [English](README.md) | 简体中文
 
-用于分析和改造 Android 游戏 APK/XAPK 中 Google Play 依赖的通用 Agent Skill，可供不同智能体工具加载。支持 Unity Mono、IL2CPP 及存在保护初始化的目标，资源下载、Firebase 和广告处理均可独立选择。
+可按游戏名称查找并下载 APK/XAPK，再分析和改造 Google Play 依赖的通用 Agent Skill，可供不同智能体工具加载。支持 Unity Mono、IL2CPP 及存在保护初始化的目标，资源下载、Firebase 和广告处理均可独立选择。
 
 技能提供调查方法和验证工具。具体目标的地址、符号、哈希、采集结果和补丁计划保存在各自任务工作区。
 
@@ -10,6 +10,7 @@
 
 | 模块 | 可选处理 |
 | --- | --- |
+| 安装包获取 | 按游戏名搜索，辨别名称、发行商与包名，选择版本，从 APKPure 或其他选定公开来源下载并记录来源与完整性。 |
 | Google Play | 保留或按功能停用登录、Billing、Games、许可、Integrity、评论与归因；复用已有且经证实的本地实现。 |
 | 资源交付 | 保留下载、合并已有分包、补齐指定内容后离线化、使用指定镜像，或只提供已具备的本地内容。 |
 | Firebase | 分别处理 Analytics、Crashlytics、Messaging、Remote Config、App Check、Auth、数据库与 Storage。 |
@@ -46,15 +47,32 @@
 
 执行修改需要文件和命令访问能力、Python 以及本次选择的分析与构建工具；设备测试还需要从智能体运行环境连接 ADB。应在所选工具中核实这些能力，安装路径有文档依据不代表已经完成该工具中的端到端运行测试。
 
+## 只提供游戏名称
+
+无需先准备本地 APK，也可以直接描述：
+
+```text
+使用 rea-gp 技能处理「游戏名称」。
+查找并下载最新兼容的原版 APK/XAPK，再分析 Google Play 依赖。
+保留正常玩法和其他模块。
+```
+
+智能体会依次搜索、确定游戏和下载版本、取得安装包、完成校验，再继续当前任务；只有身份或版本存在实质歧义时才澄清。支持 APKPure 公开页面，页面不可访问时可使用宿主浏览器或其他选定公开来源。下载用于准备任务输入，安装与功能修改仍按用户范围执行。具体流程见[安装包获取指南](references/package-acquisition.md)。
+
 ## 工具与自带脚本
 
-四个辅助脚本使用 Python 3 标准库。分析、构建和运行工具按任务选择，无需一次性安装全部工具或连接设备。先阅读[工具选择与环境准备](references/tools-and-environment.md)。技能入口、详细指南及界面文案均为英语。
+五个辅助脚本使用 Python 3 标准库。分析、构建和运行工具按任务选择，无需一次性安装全部工具或连接设备。先阅读[工具选择与环境准备](references/tools-and-environment.md)。技能入口、详细指南及界面文案均为英语。
 
 在技能目录中运行：
 
 ```bash
 # 发现本机工具，并按需探测版本。
 python3 scripts/doctor_tools.py --probe
+
+# 搜索候选，解析实际下载页面，再下载观察到的链接。
+python3 scripts/acquire_package.py search "GAME_NAME"
+python3 scripts/acquire_package.py resolve APP_DOWNLOAD_PAGE_URL
+python3 scripts/acquire_package.py fetch OBSERVED_DOWNLOAD_URL --source-page APP_DOWNLOAD_PAGE_URL --package-id PACKAGE_ID --output-dir NEW_DOWNLOAD_DIRECTORY
 
 # 清点归档及一层嵌套 APK，不执行目标。
 python3 scripts/inventory_package.py INPUT_PACKAGE --nested --output INVENTORY_JSON
@@ -77,6 +95,7 @@ SKILL.md                         技能入口与工作流程
 agents/openai.yaml               可选的 Codex 界面文案与默认提示
 references/
   agent-integration.md           宿主能力、手动加载与可移植性
+  package-acquisition.md         游戏名称搜索、下载及身份核验
   operations.md                  直接操作与故障定位
   tools-and-environment.md       工具、兼容性、签名与替代路线
   protected-unity.md             按需恢复保护初始化
@@ -87,10 +106,13 @@ references/
   patch-plan.schema.json         补丁计划结构定义
   manifest-plan.md               解码 XML 的精确修改计划
 scripts/
+  acquire_package.py             公开来源搜索、链接解析与校验下载
   doctor_tools.py                 只读工具发现与版本探测
   inventory_package.py           归档清单与哈希
   apply_verified_patches.py      经校验的等长二进制替换
   patch_manifest.py              解码 Manifest XML 的精确修改
+tests/
+  test_acquire_package.py        获取流程的页面样本与本地 HTTP 测试
 ```
 
 ## 验证与交付

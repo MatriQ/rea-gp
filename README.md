@@ -2,7 +2,7 @@
 
 English | [Simplified Chinese](README.zh-CN.md)
 
-A portable Agent Skill for analyzing and modifying Google Play dependencies in Android game APK/XAPK files. It covers Unity Mono, IL2CPP, and targets with protected initialization, with independently selectable resource download, Firebase, and advertising workflows.
+A portable Agent Skill for finding Android games by name, downloading their APK/XAPK packages, and analyzing or modifying Google Play dependencies. It covers Unity Mono, IL2CPP, and targets with protected initialization, with independently selectable resource download, Firebase, and advertising workflows.
 
 The skill provides investigation methods and verification helpers. Target-specific addresses, symbols, hashes, captures, and patch plans belong in each task workspace.
 
@@ -10,6 +10,7 @@ The skill provides investigation methods and verification helpers. Target-specif
 
 | Module | Choices |
 | --- | --- |
+| Package acquisition | Find a game by name, distinguish title/publisher/package, select a version, and download from APKPure or another selected public source with provenance and integrity checks. |
 | Google Play | Preserve or selectively disable sign-in, Billing, Games, licensing, Integrity, review, and attribution; reuse evidenced local implementations. |
 | Resource delivery | Preserve downloads, merge available packs, obtain selected content for offline use, use a specified mirror, or limit coverage to local content. |
 | Firebase | Treat Analytics, Crashlytics, Messaging, Remote Config, App Check, Auth, databases, and Storage independently. |
@@ -46,15 +47,32 @@ For an agent without native skill loading, ask it to read `/absolute/path/to/rea
 
 Executing changes requires filesystem/shell access, Python, and the selected analysis/build tools. Device tests additionally require ADB connectivity from the agent's runtime. Confirm those capabilities in the selected host; a documented installation path does not establish an end-to-end runtime test.
 
+## Download from a game name
+
+A local APK is optional. You can give the agent only a title:
+
+```text
+Use the rea-gp skill for GAME_NAME.
+Find and download its latest compatible original APK/XAPK, then analyze
+its Google Play dependencies. Preserve normal gameplay and other modules.
+```
+
+The agent searches, resolves the intended game and download variant, fetches the package, verifies it, and continues the task. It asks only when identity/version choices remain materially ambiguous. APKPure public pages are supported; a host browser or another selected public source handles inaccessible pages. Downloading prepares the task input; installation and feature changes follow the requested scope. See [package acquisition](references/package-acquisition.md).
+
 ## Tools and bundled helpers
 
-The four helpers use Python 3's standard library. Analysis/build/runtime tools are selected per task; there is no universal requirement to install every tool or connect a device. Start with [tool selection and environment setup](references/tools-and-environment.md).
+The five helpers use Python 3's standard library. Analysis/build/runtime tools are selected per task; there is no universal requirement to install every tool or connect a device. Start with [tool selection and environment setup](references/tools-and-environment.md).
 
 From the skill directory:
 
 ```bash
 # Discover installed tools; optionally run known version probes.
 python3 scripts/doctor_tools.py --probe
+
+# Find candidates, inspect an actual download page, then fetch its observed link.
+python3 scripts/acquire_package.py search "GAME_NAME"
+python3 scripts/acquire_package.py resolve APP_DOWNLOAD_PAGE_URL
+python3 scripts/acquire_package.py fetch OBSERVED_DOWNLOAD_URL --source-page APP_DOWNLOAD_PAGE_URL --package-id PACKAGE_ID --output-dir NEW_DOWNLOAD_DIRECTORY
 
 # Inventory an archive and one level of nested APKs without executing it.
 python3 scripts/inventory_package.py INPUT_PACKAGE --nested --output INVENTORY_JSON
@@ -77,6 +95,7 @@ SKILL.md                         Skill entry point and workflow
 agents/openai.yaml               Optional Codex UI metadata and starter prompt
 references/
   agent-integration.md           Host capabilities, manual loading, and portability
+  package-acquisition.md         Game-name discovery, downloading, and identity checks
   operations.md                  Direct operations and troubleshooting
   tools-and-environment.md       Tools, compatibility, signing, and alternatives
   protected-unity.md             Conditional initialization restoration
@@ -87,10 +106,13 @@ references/
   patch-plan.schema.json         Machine-readable patch plan structure
   manifest-plan.md               Exact decoded XML edit plan
 scripts/
+  acquire_package.py             Public-source search, resolution, and verified downloads
   doctor_tools.py                 Read-only tool discovery and version probes
   inventory_package.py           Archive inventory and hashes
   apply_verified_patches.py      Verified equal-length binary replacements
   patch_manifest.py              Exact edits to decoded Manifest XML
+tests/
+  test_acquire_package.py        Acquisition fixtures and local HTTP checks
 ```
 
 ## Verification and deliverables

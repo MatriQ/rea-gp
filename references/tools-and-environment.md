@@ -2,6 +2,8 @@
 
 Prepare the smallest tool set that answers the current question. A tool appearing in this list is not a reason to install it. Installing REA does not mean all analysis providers are ready.
 
+REA CLI/MCP providers are optional. The bundled helpers run as ordinary Python commands through the host's shell capability; native file and command tools can support the same workflow. Resolve helper paths from the installed skill root and keep target inputs/outputs in the task workspace. See [agent-integration.md](agent-integration.md) for host capability mapping and manual loading.
+
 ## Environment discovery
 
 Run the bundled `scripts/doctor_tools.py` first. By default it discovers executable paths and Python packages; `--probe` runs known version commands. It does not download dependencies, connect devices, or execute the target APK.

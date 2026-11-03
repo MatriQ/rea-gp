@@ -2,7 +2,7 @@
 
 English | [Simplified Chinese](README.zh-CN.md)
 
-A reusable Codex skill for analyzing and modifying Google Play dependencies in Android game APK/XAPK files. It covers Unity Mono, IL2CPP, and targets with protected initialization, with independently selectable resource download, Firebase, and advertising workflows.
+A portable Agent Skill for analyzing and modifying Google Play dependencies in Android game APK/XAPK files. It covers Unity Mono, IL2CPP, and targets with protected initialization, with independently selectable resource download, Firebase, and advertising workflows.
 
 The skill provides investigation methods and verification helpers. Target-specific addresses, symbols, hashes, captures, and patch plans belong in each task workspace.
 
@@ -21,18 +21,30 @@ Unspecified modules are preserved. Removing platform or ad dependencies does not
 
 ## Install and invoke
 
-Place this directory at `~/.codex/skills/rea-gp`, or in the `skills/rea-gp` directory of your configured Codex home. Keep `SKILL.md`, `agents/`, `references/`, and `scripts/` together.
+Copy the complete `rea-gp` directory into one supported location below, keeping `SKILL.md`, `references/`, and `scripts/` together. Omit `.git`, caches, and task artifacts from deployment copies. `agents/openai.yaml` is an optional Codex adapter; the shared workflow and helpers operate independently of it.
 
-Invoke it in a Codex conversation:
+| Host | Installation directory | Invocation |
+| --- | --- | --- |
+| Codex | `~/.codex/skills/rea-gp/`, or the configured Codex skills directory | `$rea-gp` |
+| [Claude Code](https://code.claude.com/docs/en/skills) | `.claude/skills/rea-gp/` in a project, or `~/.claude/skills/rea-gp/` | `/rea-gp` |
+| [Cursor](https://cursor.com/docs/skills) | `.cursor/skills/rea-gp/` in a project, or `~/.cursor/skills/rea-gp/` | Type `/` and select `rea-gp`. |
+| [OpenCode](https://opencode.ai/docs/skills/) | `.opencode/skills/rea-gp/` in a project, or `~/.config/opencode/skills/rea-gp/` | Ask the agent to load the `rea-gp` skill. |
+| [Gemini CLI](https://geminicli.com/docs/cli/skills/) | `.gemini/skills/rea-gp/` in a project, or `~/.gemini/skills/rea-gp/` | Check `/skills list`, then ask the agent to use `rea-gp`. |
+
+Give the selected host your task and module choices:
 
 ```text
-Use $rea-gp to analyze /absolute/path/to/game.xapk.
+Use the rea-gp skill to analyze /absolute/path/to/game.xapk.
 Disable Google Play integrations while preserving normal gameplay.
 Preserve resource downloads, Firebase, and ads unless I select them separately.
 Report the patch scope and verification results.
 ```
 
-State whether the task is analysis, modification/building, or installation/testing. Existing conversation choices remain applicable. The skill also supports automatic discovery through its description.
+State whether the task is analysis, modification/building, or installation/testing. Existing conversation choices remain applicable. Automatic discovery depends on the host's skill support and settings.
+
+For an agent without native skill loading, ask it to read `/absolute/path/to/rea-gp/SKILL.md` and follow the workflow, resolving bundled files from that directory. See [agent integration](references/agent-integration.md) for manual prompts and capability mapping. The package follows the [Agent Skills format](https://agentskills.io/specification).
+
+Executing changes requires filesystem/shell access, Python, and the selected analysis/build tools. Device tests additionally require ADB connectivity from the agent's runtime. Confirm those capabilities in the selected host; a documented installation path does not establish an end-to-end runtime test.
 
 ## Tools and bundled helpers
 
@@ -62,8 +74,9 @@ JADX/apktool and Android SDK tools support DEX and packaging work. IL2CPP, Unity
 
 ```text
 SKILL.md                         Skill entry point and workflow
-agents/openai.yaml               English UI metadata and starter prompt
+agents/openai.yaml               Optional Codex UI metadata and starter prompt
 references/
+  agent-integration.md           Host capabilities, manual loading, and portability
   operations.md                  Direct operations and troubleshooting
   tools-and-environment.md       Tools, compatibility, signing, and alternatives
   protected-unity.md             Conditional initialization restoration
@@ -87,7 +100,3 @@ Record original hashes, actual call chains, chosen module scope, and each output
 Validate the selected build's signatures, ZIP/ELF alignment, content access, callback completion, gameplay, and save/restart behavior where applicable. Online operation on a GMS-equipped device only establishes that tested condition. Report first-start versus cached behavior and any unavailable no-GMS/offline tests separately.
 
 Deliver artifacts and hashes together with changes, evidence, verified conditions, and remaining gaps. Keep signing material, package inputs, captures, and generated outputs outside the skill repository; common artifact patterns are ignored by Git.
-
-## Initial history
-
-This repository was initialized on **2026-11-05** from an existing skill, with Codex-assisted English translation and bilingual documentation. The initial history is a curated import grouped by component. At the owner's request, author and committer timestamps were assigned within **2026-11-04, 19:04–23:46 Asia/Shanghai (UTC+08:00)**; these are arranged Git metadata rather than a record of actual development times.

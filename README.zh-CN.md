@@ -2,7 +2,7 @@
 
 [English](README.md) | 简体中文
 
-用于分析和改造 Android 游戏 APK/XAPK 中 Google Play 依赖的通用 Codex skill。支持 Unity Mono、IL2CPP 及存在保护初始化的目标，资源下载、Firebase 和广告处理均可独立选择。
+用于分析和改造 Android 游戏 APK/XAPK 中 Google Play 依赖的通用 Agent Skill，可供不同智能体工具加载。支持 Unity Mono、IL2CPP 及存在保护初始化的目标，资源下载、Firebase 和广告处理均可独立选择。
 
 技能提供调查方法和验证工具。具体目标的地址、符号、哈希、采集结果和补丁计划保存在各自任务工作区。
 
@@ -21,18 +21,30 @@
 
 ## 安装与使用
 
-将整个目录放到 `~/.codex/skills/rea-gp`，或自定义 Codex 主目录下的 `skills/rea-gp`。保持 `SKILL.md`、`agents/`、`references/` 和 `scripts/` 的相对位置。
+将完整的 `rea-gp` 目录复制到下列任一受支持位置，保持 `SKILL.md`、`references/` 和 `scripts/` 的相对位置。部署副本可去掉 `.git`、缓存和任务产物。`agents/openai.yaml` 是可选的 Codex 适配信息，共享流程与辅助脚本可独立使用。
 
-在 Codex 对话中调用：
+| 工具 | 安装目录 | 调用方式 |
+| --- | --- | --- |
+| Codex | `~/.codex/skills/rea-gp/`，或已配置的 Codex 技能目录 | `$rea-gp` |
+| [Claude Code](https://code.claude.com/docs/en/skills) | 项目内 `.claude/skills/rea-gp/`，或 `~/.claude/skills/rea-gp/` | `/rea-gp` |
+| [Cursor](https://cursor.com/docs/skills) | 项目内 `.cursor/skills/rea-gp/`，或 `~/.cursor/skills/rea-gp/` | 输入 `/`，选择 `rea-gp`。 |
+| [OpenCode](https://opencode.ai/docs/skills/) | 项目内 `.opencode/skills/rea-gp/`，或 `~/.config/opencode/skills/rea-gp/` | 要求智能体加载 `rea-gp` 技能。 |
+| [Gemini CLI](https://geminicli.com/docs/cli/skills/) | 项目内 `.gemini/skills/rea-gp/`，或 `~/.gemini/skills/rea-gp/` | 用 `/skills list` 检查，再要求使用 `rea-gp`。 |
+
+向所选工具说明任务和模块选择：
 
 ```text
-使用 $rea-gp 分析 /absolute/path/to/game.xapk。
+使用 rea-gp 技能分析 /absolute/path/to/game.xapk。
 去除 Google Play 集成，保留正常玩法。
 资源下载、Firebase 和广告先保留，按我的后续选择分别处理。
 交付修改范围和验证结果。
 ```
 
-说明本次需要分析、修改与构建，还是安装与测试。会话中已有的选择继续适用；技能描述也支持自动发现。
+说明本次需要分析、修改与构建，还是安装与测试。会话中已有的选择继续适用；能否自动发现取决于宿主工具的技能支持和设置。
+
+对于没有原生技能加载功能的智能体，可直接要求它读取 `/absolute/path/to/rea-gp/SKILL.md` 并按流程执行，从该目录解析配套文件。手动提示与能力映射见[智能体适配指南](references/agent-integration.md)。技能采用 [Agent Skills 格式](https://agentskills.io/specification)。
+
+执行修改需要文件和命令访问能力、Python 以及本次选择的分析与构建工具；设备测试还需要从智能体运行环境连接 ADB。应在所选工具中核实这些能力，安装路径有文档依据不代表已经完成该工具中的端到端运行测试。
 
 ## 工具与自带脚本
 
@@ -62,8 +74,9 @@ DEX 和打包通常使用 JADX/apktool 与 Android SDK 工具；IL2CPP、Unity �
 
 ```text
 SKILL.md                         技能入口与工作流程
-agents/openai.yaml               英语界面文案与默认提示
+agents/openai.yaml               可选的 Codex 界面文案与默认提示
 references/
+  agent-integration.md           宿主能力、手动加载与可移植性
   operations.md                  直接操作与故障定位
   tools-and-environment.md       工具、兼容性、签名与替代路线
   protected-unity.md             按需恢复保护初始化
@@ -87,7 +100,3 @@ scripts/
 按本次范围验证签名、ZIP/ELF 对齐、资源访问、回调结束、玩法及存档重启。在线且具备 GMS 的设备运行成功，只能证明该条件下的结果。首次启动、已有缓存及未能验证的无 GMS/断网条件分别报告。
 
 交付产物与哈希，并附修改摘要、证据、已验证条件和剩余缺口。签名材料、原始安装包、采集结果和生成产物放在技能仓库之外；Git 已忽略常见产物类型。
-
-## 初始提交历史
-
-仓库于 **2026-11-05** 基于已有技能初始化，英语翻译与双语文档由 Codex 协助完成。初始提交按组件整理为导入历史。按所有者要求，作者与提交者时间统一安排在 **北京时间 2026-11-04 19:04–23:46（Asia/Shanghai，UTC+08:00）**；这些时间属于安排过的 Git 元数据，并非实际开发时间记录。

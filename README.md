@@ -1,5 +1,7 @@
 # REA_GP
 
+English | [Simplified Chinese](README.zh-CN.md)
+
 A reusable Codex skill for analyzing and modifying Google Play dependencies in Android game APK/XAPK files. It covers Unity Mono, IL2CPP, and targets with protected initialization, with independently selectable resource download, Firebase, and advertising workflows.
 
 The skill provides investigation methods and verification helpers. Target-specific addresses, symbols, hashes, captures, and patch plans belong in each task workspace.

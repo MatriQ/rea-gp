@@ -10,6 +10,7 @@ __pycache__/
 
 # Per-target inputs, captures, and generated outputs
 artifacts/
+downloads/
 captures/
 outputs/
 runs/

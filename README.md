@@ -1,6 +1,6 @@
 # REA_GP
 
-English | [Simplified Chinese](README.zh-CN.md)
+English | [简体中文](README.zh-CN.md)
 
 A portable Agent Skill for finding Android games by name, downloading their APK/XAPK packages, and analyzing or modifying Google Play dependencies. It covers Unity Mono, IL2CPP, and targets with protected initialization, with independently selectable resource download, Firebase, and advertising workflows.
 
@@ -22,15 +22,32 @@ Unspecified modules are preserved. Removing platform or ad dependencies does not
 
 ## Install and invoke
 
-Copy the complete `rea-gp` directory into one supported location below, keeping `SKILL.md`, `references/`, and `scripts/` together. Omit `.git`, caches, and task artifacts from deployment copies. `agents/openai.yaml` is an optional Codex adapter; the shared workflow and helpers operate independently of it.
+Copy the complete `rea-gp` directory into one supported location below, keeping `SKILL.md`, `references/`, and `scripts/` together. Omit `.git`, `node_modules`, caches, and task artifacts from skill-directory deployment copies. `agents/openai.yaml` is an optional Codex adapter; the shared workflow and helpers operate independently of it.
 
 | Host | Installation directory | Invocation |
 | --- | --- | --- |
 | Codex | `~/.codex/skills/rea-gp/`, or the configured Codex skills directory | `$rea-gp` |
+| [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) | `.dsh/skills/rea-gp/` in a project, or `~/.dsh/skills/rea-gp/` | `/rea-gp`, or ask the agent to load `rea-gp` with the `skill` tool. |
 | [Claude Code](https://code.claude.com/docs/en/skills) | `.claude/skills/rea-gp/` in a project, or `~/.claude/skills/rea-gp/` | `/rea-gp` |
 | [Cursor](https://cursor.com/docs/skills) | `.cursor/skills/rea-gp/` in a project, or `~/.cursor/skills/rea-gp/` | Type `/` and select `rea-gp`. |
 | [OpenCode](https://opencode.ai/docs/skills/) | `.opencode/skills/rea-gp/` in a project, or `~/.config/opencode/skills/rea-gp/` | Ask the agent to load the `rea-gp` skill. |
 | [Gemini CLI](https://geminicli.com/docs/cli/skills/) | `.gemini/skills/rea-gp/` in a project, or `~/.gemini/skills/rea-gp/` | Check `/skills list`, then ask the agent to use `rea-gp`. |
+
+### DeepSeek Harness plugin
+
+With Node.js 24.9+ and DeepSeek Harness `^0.2.2-rc.1`, install the `dsh-rea-gp` bundle from npm:
+
+```bash
+dsh plugin --profile demo add dsh-rea-gp@0.1.0
+dsh --profile demo --dump-config
+dsh --profile demo
+```
+
+Use `/rea-gp` followed by your task. The plugin registers the existing skill and resolves its references and Python helpers from the installed package. The profile needs the skill registry and loader; the standard base bundle provides them. This plugin route does not require a separate skill-directory copy or the filesystem skill provider.
+
+For local development, run `npm ci` in this repository, then `dsh plugin --profile demo add /absolute/path/to/rea-gp`. To distribute a tarball, run `npm pack`, then install it with `dsh plugin --profile demo add /absolute/path/to/dsh-rea-gp-0.1.0.tgz`. No compilation or install-time build script is needed.
+
+The directory installation in the table remains available with the filesystem skill provider. A custom `DSH_HOME` changes its user installation root. See [DeepSeek Harness integration](references/agent-integration.md#deepseek-harness) for details and checks.
 
 Give the selected host your task and module choices:
 
@@ -93,6 +110,9 @@ JADX/apktool and Android SDK tools support DEX and packaging work. IL2CPP, Unity
 ```text
 SKILL.md                         Skill entry point and workflow
 agents/openai.yaml               Optional Codex UI metadata and starter prompt
+package.json                    DeepSeek Harness bundle and npm packaging
+cordis.patch.yml                DeepSeek Harness plugin activation layer
+deepseek/index.js               Bundled skill provider; reuses SKILL.md
 references/
   agent-integration.md           Host capabilities, manual loading, and portability
   package-acquisition.md         Game-name discovery, downloading, and identity checks
@@ -112,6 +132,7 @@ scripts/
   apply_verified_patches.py      Verified equal-length binary replacements
   patch_manifest.py              Exact edits to decoded Manifest XML
 tests/
+  deepseek.test.js               Harness registration, lifecycle, and packed resources
   test_acquire_package.py        Acquisition fixtures and local HTTP checks
 ```
 

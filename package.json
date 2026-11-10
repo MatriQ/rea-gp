@@ -1,0 +1,57 @@
+{
+  "name": "dsh-rea-gp",
+  "version": "0.1.0",
+  "description": "Android game package acquisition and Google Play dependency workflows for DeepSeek Harness",
+  "author": "Matri Qi",
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "android",
+    "agent-skill"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MatriQ/rea-gp.git"
+  },
+  "homepage": "https://github.com/MatriQ/rea-gp#readme",
+  "bugs": {
+    "url": "https://github.com/MatriQ/rea-gp/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "type": "module",
+  "main": "./deepseek/index.js",
+  "exports": {
+    ".": "./deepseek/index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "deepseek/index.js",
+    "cordis.patch.yml",
+    "SKILL.md",
+    "references/*.md",
+    "references/*.json",
+    "scripts/*.py"
+  ],
+  "engines": {
+    "node": ">=24.9.0",
+    "dsh": "^0.2.2-rc.1"
+  },
+  "scripts": {
+    "test": "node --test tests/deepseek.test.js"
+  },
+  "dependencies": {
+    "yaml": "^2.9.1"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "~4.1.0",
+    "@deepseek-ai/dsh-skill": "0.2.2-rc.1"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

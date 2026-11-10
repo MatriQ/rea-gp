@@ -22,15 +22,32 @@
 
 ## 安装与使用
 
-将完整的 `rea-gp` 目录复制到下列任一受支持位置，保持 `SKILL.md`、`references/` 和 `scripts/` 的相对位置。部署副本可去掉 `.git`、缓存和任务产物。`agents/openai.yaml` 是可选的 Codex 适配信息，共享流程与辅助脚本可独立使用。
+将完整的 `rea-gp` 目录复制到下列任一受支持位置，保持 `SKILL.md`、`references/` 和 `scripts/` 的相对位置。技能目录部署副本可去掉 `.git`、`node_modules`、缓存和任务产物。`agents/openai.yaml` 是可选的 Codex 适配信息，共享流程与辅助脚本可独立使用。
 
 | 工具 | 安装目录 | 调用方式 |
 | --- | --- | --- |
 | Codex | `~/.codex/skills/rea-gp/`，或已配置的 Codex 技能目录 | `$rea-gp` |
+| [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) | 项目内 `.dsh/skills/rea-gp/`，或 `~/.dsh/skills/rea-gp/` | `/rea-gp`，或要求智能体通过 `skill` 工具加载 `rea-gp`。 |
 | [Claude Code](https://code.claude.com/docs/en/skills) | 项目内 `.claude/skills/rea-gp/`，或 `~/.claude/skills/rea-gp/` | `/rea-gp` |
 | [Cursor](https://cursor.com/docs/skills) | 项目内 `.cursor/skills/rea-gp/`，或 `~/.cursor/skills/rea-gp/` | 输入 `/`，选择 `rea-gp`。 |
 | [OpenCode](https://opencode.ai/docs/skills/) | 项目内 `.opencode/skills/rea-gp/`，或 `~/.config/opencode/skills/rea-gp/` | 要求智能体加载 `rea-gp` 技能。 |
 | [Gemini CLI](https://geminicli.com/docs/cli/skills/) | 项目内 `.gemini/skills/rea-gp/`，或 `~/.gemini/skills/rea-gp/` | 用 `/skills list` 检查，再要求使用 `rea-gp`。 |
+
+### DeepSeek Harness 插件
+
+使用 Node.js 24.9+ 和 DeepSeek Harness `^0.2.2-rc.1`，可从 npm 安装 `dsh-rea-gp` bundle：
+
+```bash
+dsh plugin --profile demo add dsh-rea-gp@0.1.0
+dsh --profile demo --dump-config
+dsh --profile demo
+```
+
+在会话中输入 `/rea-gp` 并描述任务。插件注册现有技能，从安装包目录解析引用文档和 Python 脚本。当前 profile 需要技能注册表与加载工具，标准 base bundle 已提供；插件方式无需再复制技能目录或启用文件系统技能提供器。
+
+本地开发时，在本仓库中执行 `npm ci`，再用 `dsh plugin --profile demo add /absolute/path/to/rea-gp` 安装。分发时执行 `npm pack`，再用 `dsh plugin --profile demo add /absolute/path/to/dsh-rea-gp-0.1.0.tgz` 安装。无需编译或安装时构建。
+
+上表的目录安装方式仍可使用，但需要文件系统技能提供器。自定义 `DSH_HOME` 会改变其用户级安装根目录。详细适配与验证方法见 [DeepSeek Harness 适配说明](references/agent-integration.md#deepseek-harness)。
 
 向所选工具说明任务和模块选择：
 
@@ -93,6 +110,9 @@ DEX 和打包通常使用 JADX/apktool 与 Android SDK 工具；IL2CPP、Unity �
 ```text
 SKILL.md                         技能入口与工作流程
 agents/openai.yaml               可选的 Codex 界面文案与默认提示
+package.json                    DeepSeek Harness bundle 与 npm 打包配置
+cordis.patch.yml                DeepSeek Harness 插件激活配置层
+deepseek/index.js               复用 SKILL.md 的打包技能提供器
 references/
   agent-integration.md           宿主能力、手动加载与可移植性
   package-acquisition.md         游戏名称搜索、下载及身份核验
@@ -112,6 +132,7 @@ scripts/
   apply_verified_patches.py      经校验的等长二进制替换
   patch_manifest.py              解码 Manifest XML 的精确修改
 tests/
+  deepseek.test.js               Harness 注册、生命周期与打包资源测试
   test_acquire_package.py        获取流程的页面样本与本地 HTTP 测试
 ```
 

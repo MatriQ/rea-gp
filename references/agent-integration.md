@@ -4,11 +4,37 @@ The shared workflow uses the [Agent Skills directory format](https://agentskills
 
 ## Install one complete skill
 
-Keep `SKILL.md`, `references/`, and `scripts/` together under a directory named `rea-gp`. Keep `agents/openai.yaml` when using Codex; it is optional metadata for that integration and can be ignored by other hosts. Exclude `.git`, caches, signing material, and target artifacts from a deployment copy.
+Keep `SKILL.md`, `references/`, and `scripts/` together under a directory named `rea-gp`. Keep `agents/openai.yaml` when using Codex; it is optional metadata for that integration and can be ignored by other hosts. Exclude `.git`, `node_modules`, caches, signing material, and target artifacts from a skill-directory deployment copy.
 
 Choose a project installation when sharing the workflow with a repository, or a user installation for local reuse. Avoid installing conflicting copies under the same name in multiple discovery roots. Use the host's skill list or refresh mechanism to confirm which copy is loaded. The bilingual READMEs list concrete installation paths and invocation examples.
 
 Cloud or remote agent sessions need the skill and tools in their own runtime. A local installation does not establish that a remote worker can read the same files, run the Android toolchain, or contact a phone connected to the user's computer. Verify the actual execution location and connectivity before runtime work.
+
+## DeepSeek Harness
+
+### Plugin installation
+
+The npm package `dsh-rea-gp` contributes a bundle layer through `cordis.patch.yml`. Its provider registers `rea-gp` from the existing `SKILL.md`, with the installed package root as the resource base. Packaged skills use rank 600, allowing a project or user copy in the same registry layer to override the bundled copy. The provider registration follows the plugin lifecycle and is removed when the plugin is unloaded.
+
+Install from npm with `dsh plugin --profile demo add dsh-rea-gp@0.1.0`. For local development, prepare a checkout with `npm ci`, then install it using `dsh plugin --profile demo add /absolute/path/to/rea-gp`. Alternatively, run `npm pack` and install the resulting `.tgz` with the same command. The bundle ships plain JavaScript and needs no build step. It targets Node.js 24.9+ and Harness `^0.2.2-rc.1`; automated registry tests use `0.2.2-rc.1`.
+
+The profile must supply `@deepseek-ai/dsh-skill` and `@deepseek-ai/dsh-tool-skill` (provided by the standard base bundle). The plugin supplies its own provider, so `@deepseek-ai/dsh-skill-filesystem` is optional for this route. No filesystem discovery copy is needed. Verify composition with `dsh --profile demo --dump-config`, then start that profile and invoke `/rea-gp`.
+
+Run `npm test` for provider registration, resource access, local override priority, teardown, and tarball checks. These checks do not exercise a model conversation or Android/device work.
+
+### Directory installation
+
+For native filesystem discovery, use the existing skill directory unchanged. The active profile needs these plugins (a composition fragment, not a complete profile):
+
+```yaml
+- name: '@deepseek-ai/dsh-skill'
+- name: '@deepseek-ai/dsh-skill-filesystem'
+- name: '@deepseek-ai/dsh-tool-skill'
+```
+
+Install at `<projectRoot>/.dsh/skills/rea-gp/` or `${DSH_HOME:-$HOME/.dsh}/skills/rea-gp/`. Shared `.agents/skills/rea-gp/` project and user roots are also supported; `DSH_AGENTS_HOME` overrides the default user `~/.agents` root. These paths require the filesystem provider's default roots to be enabled. Discovery checks direct skill bundles, so avoid an extra directory such as `skills/rea-gp/rea-gp/SKILL.md`. With no `.git` ancestor, the session's current directory becomes the project root.
+
+Invoke `/rea-gp` with the task, or ask the agent to load `rea-gp` using the `skill` tool. Confirm the loaded instruction path identifies the intended copy, then follow [Check an integration](#check-an-integration) to verify references and helper execution. Use [manual loading](#manual-loading-without-native-skills) if native skill plugins are unavailable. Python, Android tools, and optional REA/MCP services still need to be accessible in the Harness runtime.
 
 ## Map capabilities rather than tool names
 
@@ -59,6 +85,8 @@ Native discovery, successful helper execution, and successful target installatio
 ## Host documentation
 
 - [Agent Skills specification](https://agentskills.io/specification): shared directory, frontmatter, and reference format.
+- [DeepSeek Harness filesystem skills](https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/skill/skill-filesystem/README.md) and [skill loader](https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/skill/tool-skill/README.md): discovery roots, required plugins, and `/rea-gp` invocation.
+- [DeepSeek Harness plugin packaging](https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/user/develop/basic/publish.md) and [bundled Office skill provider](https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/skill/skill-office/src/index.ts): bundle installation and packaged skill resources.
 - [Claude Code skills](https://code.claude.com/docs/en/skills): `.claude/skills` discovery and `/rea-gp` invocation.
 - [Cursor skills](https://cursor.com/docs/skills): `.cursor/skills` discovery and selection from the `/` menu.
 - [OpenCode skills](https://opencode.ai/docs/skills/): `.opencode/skills` discovery and the native skill-loading tool.
